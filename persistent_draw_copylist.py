@@ -22,12 +22,11 @@ def init_ortho():
     glLoadIdentity()
     gluOrtho2D(0,500,0,400)
 
-def draw_line(draw_element=GL_LINE_STRIP):
-    for point_list in ptcache:
-        glBegin(draw_element)
-        for p in point_list:
-            glVertex2f(p[0], p[1])
-        glEnd()
+def draw_line(point_list, draw_element=GL_LINE_STRIP):
+    glBegin(draw_element)
+    for p in point_list:
+        glVertex2f(p[0], p[1])
+    glEnd()
 
 done = False
 isDown = False
@@ -45,10 +44,10 @@ while not done:
             done = True
         elif event.type == MOUSEBUTTONDOWN:
             isDown = True
-            points = []
-            ptcache.append(points)
         elif event.type == MOUSEBUTTONUP:
             isDown = False
+            ptcache.append(points.copy())
+            points.clear()
         elif event.type == MOUSEMOTION and isDown:
             p = pygame.mouse.get_pos()
             x = customutil.map_value(0, 1000, 0, 500, p[0])
@@ -59,8 +58,13 @@ while not done:
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
-    draw_line()
-    draw_line(draw_element=GL_POINTS)
+    if isDown:
+        draw_line(points)
+        draw_line(points, draw_element=GL_POINTS)
+
+    for cache in ptcache:
+        draw_line(cache)
+        draw_line(cache, draw_element=GL_POINTS)
 
     pygame.display.flip()
     pygame.time.wait(100)
