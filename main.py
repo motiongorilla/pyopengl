@@ -24,45 +24,14 @@ def init_ortho():
     glLoadIdentity()
     gluOrtho2D(ortho_width[0], ortho_width[1], ortho_height[0], ortho_height[1])
 
-def draw_line(draw_element=GL_LINE_STRIP):
+def draw_line(draw_element=GL_LINE_STRIP, color=[1,1,1]):
     for point_list in ptcache:
         glBegin(draw_element)
+        glColor3f(color[0], color[1], color[2])
         for p in point_list:
             glVertex2f(p[0], p[1])
         glEnd()
 
-def save_canvas():
-    with open("canvas.txt", "w") as f:
-        f.write(f"{len(ptcache)}\n")
-        for cache in ptcache:
-            f.write(f"{len(cache)}\n")
-            for coord in cache:
-                f.write(f"{coord[0]} {coord[1]}\n")
-    print("Canvas is saved!")
-
-def load_canvas():
-    with open("./canvas.txt", "r") as file:
-        global points
-        global ptcache
-        cache_num = int(file.readline())
-
-        ptcache = []
-        for cache in range(cache_num):
-            points = []
-            ptcache.append(points)
-            point_num = int(file.readline())
-            for p in range(point_num):
-                px, py = [float(value) for value in next(file).split()]
-                points.append((px,py))
-
-
-def plot_graph():
-    for px in np.arange(0, 4, 0.005):
-        py = math.exp(-px) * math.cos(2*math.pi * px)
-        px = customutil.map_value(0,4,ortho_width[0],ortho_width[1],px)
-        py = customutil.map_value(-1,1,ortho_height[0],ortho_height[1],py)
-        points.append((px,py))
-    ptcache.append(points)
 
 
 done = False
@@ -72,8 +41,9 @@ points=[]
 ptcache: list[list]= []
 
 init_ortho()
-# plot_graph()
+# customutil.plot_graph()
 glPointSize(5)
+glLineWidth(5)
 
 while not done:
     p = None
@@ -83,18 +53,16 @@ while not done:
             done = True
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s:
-                save_canvas()
+                customutil.save_canvas()
             elif event.key == pygame.K_l:
-                load_canvas()
+                customutil.load_canvas()
             elif event.key == pygame.K_SPACE:
                 ptcache.clear()
         elif event.type == MOUSEBUTTONDOWN:
             isDown = True
-            points = []
+            if len(points)>5:
+                points = []
             ptcache.append(points)
-        elif event.type == MOUSEBUTTONUP:
-            isDown = False
-        elif event.type == MOUSEMOTION and isDown:
             p = pygame.mouse.get_pos()
             x = customutil.map_value(0, screen_width, ortho_width[0], ortho_width[1], p[0])
             y = customutil.map_value(screen_height, 0, ortho_height[0], ortho_height[1], p[1])
@@ -104,7 +72,8 @@ while not done:
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
-    draw_line()
+    draw_line(draw_element=GL_TRIANGLES_ADJACENCY)
+    draw_line(draw_element=GL_LINE_LOOP, color=[1,0,0])
 
     pygame.display.flip()
     pygame.time.wait(30)
