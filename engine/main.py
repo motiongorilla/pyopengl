@@ -25,8 +25,8 @@ camera_origin = [0, 0, 0]
 camera_target = [0, 0, 0]
 up_vector = [0, 1, 0]
 
-mesh = loadmesh.LoadMesh("./geo/cube.obj", GL_LINE_LOOP)
-cube = Cube.CubeMesh(GL_LINE_LOOP)
+mesh = loadmesh.LoadMesh("./geo/cube.obj", GL_LINE_LOOP,
+                         orientation=Mesh.Rotation(45, pygame.Vector3(0, 1, 0)))
 camera = camera.Camera()
 
 def initialise():
@@ -91,11 +91,8 @@ def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     camera_init()
     draw_world_axis()
-    for x in range(12):
-        step = (2*math.pi)/12
-        pos_x = math.sin(step*x)*5
-        pos_z = math.cos(step*x)*5
-        mesh.draw(l_color=(0.3,1,0.6), translate=pygame.Vector3(pos_x, 0, pos_z))
+    mesh.draw(l_color=(0.3,1,0.6), translate=pygame.Vector3(5, 0, 0),
+              rotate_angle=45, rotate_axis=pygame.Vector3(0,0,1))
 
 
 done = False

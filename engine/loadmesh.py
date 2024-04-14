@@ -3,10 +3,11 @@ import pygame
 import Mesh
 
 class LoadMesh(Mesh.Mesh):
-    def __init__(self, filename, draw_type, position=pygame.Vector3(0,0,0)) -> None:
+    def __init__(self, filename, draw_type, position=pygame.Vector3(0,0,0),
+                 orientation=Mesh.Rotation(0, pygame.Vector3(1,0,0))) -> None:
         self.filename = filename
         vertices, triangles = self.load_geometry()
-        super().__init__(vertices, triangles, draw_type, position)
+        super().__init__(vertices, triangles, draw_type, position, orientation)
 
     def load_geometry(self)->tuple[list[float],list[float]]:
         vertices = []
