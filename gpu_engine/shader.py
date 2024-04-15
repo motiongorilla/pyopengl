@@ -1,10 +1,8 @@
 from glapp.PyGLApp import *
 from glapp.utils import *
 from glapp.GraphicsData import GraphicsData
-from glapp.square import *
-from glapp.triangle import *
 from glapp.axis import *
-from glapp.cube import *
+from glapp.loadmesh import *
 
 import numpy as np
 
@@ -40,19 +38,16 @@ void main(){
 class Shader(PyGLApp):
     def __init__(self) -> None:
         super().__init__(400, 200, 1000, 800)
-        self.square: Square = None
-        self.triangle: Triangle = None
         self.axis: Axis = None
-        self.cube = None
+        self.mesh = None
 
     def initialise(self):
         self.program_id = create_program(vertex_shader, fragment_shader)
         self.camera = Camera(program_id=self.program_id, w=self.screen_width, h=self.screen_height)
-
-        self.square = Square(self.program_id, pygame.Vector3(-0.5, 0.5, 0))
-        self.triangle = Triangle(self.program_id, pygame.Vector3(0.5, -0.5, 0))
-        self.cube = Cube(self.program_id, pygame.Vector3(0,0,0))
         self.axis = Axis(self.program_id, pygame.Vector3(0,0,0))
+
+        self.mesh = LoadMesh(program_id=self.program_id, draw_type=GL_POINTS,
+                             filename="./geometry/pighead.obj", color_normals=True)
         glEnable(GL_DEPTH_TEST)
 
     def camera_init(self):
@@ -63,8 +58,6 @@ class Shader(PyGLApp):
         glUseProgram(self.program_id)
         self.camera.update()
         self.axis.draw()
-        self.square.draw()
-        self.cube.draw()
-        self.triangle.draw()
+        self.mesh.draw()
 
 Shader().mainloop()
