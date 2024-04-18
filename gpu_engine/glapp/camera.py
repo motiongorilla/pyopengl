@@ -12,7 +12,7 @@ class Camera:
         self.last_mouse = pygame.math.Vector2(0, 0)
         self.mouse_sensX = 0.1
         self.mouse_sensY = 0.1
-        self.speed = 0.005
+        self.speed = 0.05
         self.program_id = program_id
         self.width = w
         self.height = h

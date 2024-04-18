@@ -24,39 +24,7 @@ class PyGLApp():
         pygame.display.set_caption("PyOpenGL Engine")
 
         self.camera = None
-        self.draw_world_axis()
-
-    def draw_world_axis(self):
-        glLineWidth(3)
-        glBegin(GL_LINES)
-        # X Axis
-        glColor3f(1, 0, 0)
-        glVertex3d(-100, 0, 0)
-        glVertex3d(100, 0, 0)
-        #X arrow
-        glVertex3d(2, 0, 0)
-        glVertex3d(1.75, 0, 0.25)
-        glVertex3d(2, 0, 0)
-        glVertex3d(1.75, 0, -0.25)
-        # Y Axis
-        glColor3f(0, 1, 0)
-        glVertex3d(0, -100, 0)
-        glVertex3d(0, 100, 0)
-        #Y arrow
-        glVertex3d(0, 2, 0)
-        glVertex3d(0.25, 1.75, 0)
-        glVertex3d(0, 2, 0)
-        glVertex3d(-0.25, 1.75, 0)
-        # Z Axis
-        glColor3f(0, 0, 1)
-        glVertex3d(0, 0, -100)
-        glVertex3d(0, 0, 100)
-        # Z arrow
-        glVertex3d(0.25, 0, 1.75)
-        glVertex3d(0, 0, 2)
-        glVertex3d(-0.25, 0, 1.75)
-        glVertex3d(0, 0, 2)
-        glEnd()
+        self.clock = pygame.time.Clock()
 
     def initialise(self):
         raise NotImplementedError()
@@ -84,5 +52,6 @@ class PyGLApp():
             self.camera_init()
             self.display()
             pygame.display.flip()
+            self.clock.tick(60)
 
         pygame.quit()

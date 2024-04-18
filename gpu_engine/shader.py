@@ -3,6 +3,8 @@ from glapp.utils import *
 from glapp.GraphicsData import GraphicsData
 from glapp.axis import *
 from glapp.loadmesh import *
+from glapp.transformations import *
+from glapp.animated_cube import *
 
 import numpy as np
 
@@ -40,14 +42,19 @@ class Shader(PyGLApp):
         super().__init__(400, 200, 1000, 800)
         self.axis: Axis = None
         self.mesh = None
+        self.anim = None
 
     def initialise(self):
         self.program_id = create_program(vertex_shader, fragment_shader)
         self.camera = Camera(program_id=self.program_id, w=self.screen_width, h=self.screen_height)
-        self.axis = Axis(self.program_id, pygame.Vector3(0,0,0))
+        self.axis = Axis(program_id=self.program_id, translation=pygame.Vector3(0,0,0))
+        self.mesh = LoadMesh(program_id=self.program_id, draw_type=GL_TRIANGLES,
+                             filename="./geometry/pighead.obj", color_normals=True,
+                             scale=pygame.Vector3(1, 1, 1),
+                             rotation=Rotation(0, pygame.Vector3(1,0,0)))
+        self.anim = AnimatedCube(program_id=self.program_id, location=pygame.Vector3(0,0,2),
+                                 move_rotation=Rotation(25/60, pygame.Vector3(0,1,0)))
 
-        self.mesh = LoadMesh(program_id=self.program_id, draw_type=GL_POINTS,
-                             filename="./geometry/pighead.obj", color_normals=True)
         glEnable(GL_DEPTH_TEST)
 
     def camera_init(self):
@@ -58,6 +65,7 @@ class Shader(PyGLApp):
         glUseProgram(self.program_id)
         self.camera.update()
         self.axis.draw()
+        self.anim.draw()
         self.mesh.draw()
 
 Shader().mainloop()
