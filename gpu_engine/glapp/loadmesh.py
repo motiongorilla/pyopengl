@@ -7,7 +7,11 @@ class LoadMesh(mesh.Mesh):
                  color_normals=False, mesh_color=(1,1,1),
                  translation=pygame.Vector3(0,0,0),
                  rotation=mesh.Rotation(0, pygame.Vector3(0,1,0)),
-                 scale=pygame.Vector3(1,1,1)) -> None:
+                 scale=pygame.Vector3(1,1,1),
+                 animated=False):
+                 # rotation_anim=mesh.Rotation(0, pygame.Vector3(0,1,0)),
+                 # translate_anim=pygame.Vector3(0,0,0),
+                 # scale_anim=pygame.Vector3(1,1,1)) -> None:
         coordinates, triangles, normals, normal_list = self.load_geometry(filename)
         vertices = utils.format_vertices(coordinates, triangles)
         colors = []
@@ -20,7 +24,9 @@ class LoadMesh(mesh.Mesh):
 
         super().__init__(program_id=program_id, vertices=vertices,
                          draw_type=draw_type, translation=translation, vertex_colors=colors,
-                         rotation=rotation, scale=scale)
+                         rotation=rotation, scale=scale, animated=animated)
+                         # rotation_anim=rotation_anim,
+                         # translate_anim=translate_anim, scale_anim=scale_anim)
 
     def load_geometry(self, filename):
         vertices = []
