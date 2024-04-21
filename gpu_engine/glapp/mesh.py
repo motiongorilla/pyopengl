@@ -9,27 +9,29 @@ import pygame
 import numpy as np
 
 class Mesh:
-    def __init__(self, program_id, vertices, vertex_colors, draw_type,
+    def __init__(self, program_id, vertices, vertex_colors, normals, uv, draw_type,
                  translation=pygame.Vector3(0,0,0),
                  rotation=Rotation(0, pygame.Vector3(0,1,0)),
                  scale=pygame.Vector3(1,1,1),
-                 animated=False):
-                 # rotation_anim=Rotation(1, pygame.Vector3(0,1,0)),
-                 # translate_anim = pygame.Vector3(0.1, 0, 0),
-                 # scale_anim = pygame.Vector3(1,1.01,1)) -> None:
+                 animated=False)->None:
         self.vertices = vertices
         self.draw_type = draw_type
+        self.vertex_normal = normals
+        self.uv = uv
         self.program_id = program_id
         self.animated = animated
         self.vao_ref = glGenVertexArrays(1)
         glBindVertexArray(self.vao_ref)
+
         position = GraphicsData("vec3", self.vertices)
-        position.create_variable(program_id, "position")
+        position.create_variable(self.program_id, "position")
+
         colors = GraphicsData("vec3", vertex_colors)
-        colors.create_variable(program_id, "vertex_color")
-        # self.rotation_anim = rotation_anim
-        # self.translate_anim = translate_anim
-        # self.scale_anim = scale_anim
+        colors.create_variable(self.program_id, "vertex_color")
+
+        vertex_normal = GraphicsData("vec3", self.vertex_normal)
+        vertex_normal.create_variable(self.program_id, "vertex_normal")
+
         self.transformation_matrix = identity_matrix()
 
         self.transformation_matrix = rotate_complex(self.transformation_matrix,
