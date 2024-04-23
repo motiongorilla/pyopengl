@@ -4,7 +4,7 @@ from . import mesh, utils
 
 class LoadMesh(mesh.Mesh):
     def __init__(self, filename, program_id, draw_type,
-                 color_normals=False, mesh_color=(1,1,1),
+                 color_normals=False, mesh_color=(1.0,1.0,1.0),
                  translation=pygame.Vector3(0,0,0),
                  rotation=mesh.Rotation(0, pygame.Vector3(0,1,0)),
                  scale=pygame.Vector3(1,1,1),

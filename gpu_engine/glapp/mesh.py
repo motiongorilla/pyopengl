@@ -17,6 +17,7 @@ class Mesh:
         self.vertices = vertices
         self.draw_type = draw_type
         self.vertex_normal = normals
+        self.vertex_color = vertex_colors
         self.uv = uv
         self.program_id = program_id
         self.animated = animated
@@ -26,7 +27,7 @@ class Mesh:
         position = GraphicsData("vec3", self.vertices)
         position.create_variable(self.program_id, "position")
 
-        colors = GraphicsData("vec3", vertex_colors)
+        colors = GraphicsData(data_type="vec3", data=self.vertex_color)
         colors.create_variable(self.program_id, "vertex_color")
 
         vertex_normal = GraphicsData("vec3", self.vertex_normal)

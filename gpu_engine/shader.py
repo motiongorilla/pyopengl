@@ -4,6 +4,7 @@ from glapp.GraphicsData import GraphicsData
 from glapp.axis import *
 from glapp.loadmesh import *
 from glapp.transformations import *
+from glapp.light import *
 
 import numpy as np
 
@@ -21,12 +22,14 @@ uniform mat4 view_mat;
 out vec3 color;
 out vec3 normal;
 out vec3 fragpos;
-out vec3 light_pos;
+out vec3 view_pos;
 
 void main(){
-        light_pos = vec3(model_mat*view_mat*vec4(0,0,0,1));
+        view_pos = vec3(inverse(model_mat)*
+                        vec4(view_mat[3][0],view_mat[3][1],view_mat[3][2],1));
+
         gl_Position = projection_mat * inverse(view_mat) * model_mat * vec4(position, 1);
-        normal = vertex_normal;
+        normal = mat3(transpose(inverse(model_mat))) * vertex_normal;
         fragpos = vec3(model_mat * vec4(position, 1));
         color = vertex_color;
         }
@@ -37,18 +40,40 @@ fragment_shader = r'''
 in vec3 color;
 in vec3 normal;
 in vec3 fragpos;
-in vec3 light_pos;
+in vec3 view_pos;
 
 out vec4 frag_color;
 
-void main(){
-        vec3 light_color = vec3(1,1,1);
+#define NUM_LIGHTS 2
+uniform vec3 light_pos[NUM_LIGHTS];
+
+
+vec4 Create_Light(vec3 light_pos, vec3 light_color, vec3 normal, vec3 fragpos, vec3 view_dir, vec3 color){
+        //ambient
+        float ambient_strength = 0.1;
+        vec3 ambient_light = ambient_strength * light_color;
+
+        // diffuse
         vec3 norm = normalize(normal);
         vec3 light_dir = normalize(light_pos-fragpos);
-        float diff = max(dot(normal, light_dir), 0);
+        float diff = max(dot(norm, light_dir), 0);
         vec3 diffuse = diff * light_color;
 
-        frag_color = vec4(color*diffuse,1);
+        // specular
+        float specular_strength = 0.8;
+        vec3 reflection_dir = normalize(-light_dir - norm);
+        float spec = pow(max(dot(view_dir, reflection_dir), 0), 32);
+        vec3 specular = specular_strength * spec * light_color;
+
+        return vec4(color * (ambient_light + diffuse + specular),1);
+        }
+
+void main(){
+        vec3 view_dir = normalize(view_pos-fragpos);
+
+        for(int i=0; i < NUM_LIGHTS; i++) {
+            frag_color += Create_Light(light_pos[i], vec3(1,1,1), normal, fragpos, view_dir, color);
+        }
         }
 '''
 
@@ -58,14 +83,18 @@ class Shader(PyGLApp):
         super().__init__(400, 200, 1000, 800)
         self.axis = None
         self.mesh = None
+        self.light = None
+        self.light_b = None
 
     def initialise(self):
         self.program_id = create_program(vertex_shader, fragment_shader)
-        self.camera = Camera(program_id=self.program_id, w=self.screen_width, h=self.screen_height, fov=80)
+        self.camera = Camera(program_id=self.program_id, w=self.screen_width, h=self.screen_height, fov=40)
         self.axis = Axis(program_id=self.program_id, translation=pygame.Vector3(0,0,0))
         self.mesh = LoadMesh(program_id=self.program_id, draw_type=GL_TRIANGLES,
                              filename="./geometry/pighead.obj", color_normals=False,
                              scale=pygame.Vector3(1, 1, 1))
+        self.light = Light(self.program_id, pos=pygame.Vector3(2,1,2), light_id=0)
+        self.light_b = Light(self.program_id, pos=pygame.Vector3(-2,1,1), light_id=1)
 
         glEnable(GL_DEPTH_TEST)
 
@@ -76,6 +105,8 @@ class Shader(PyGLApp):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glUseProgram(self.program_id)
         self.camera.update()
+        self.light.update()
+        self.light_b.update()
         self.axis.draw()
         self.mesh.draw()
 
