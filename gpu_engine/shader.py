@@ -70,9 +70,10 @@ vec4 Create_Light(vec3 light_pos, vec3 light_color, vec3 normal, vec3 fragpos, v
 
 void main(){
         vec3 view_dir = normalize(view_pos-fragpos);
+        frag_color = vec4(0,0,0,1);
 
         for(int i=0; i < NUM_LIGHTS; i++) {
-            frag_color += Create_Light(light_pos[i], vec3(1,1,1), normal, fragpos, view_dir, color);
+            frag_color += Create_Light(light_pos[i], vec3(i,1-i, 1-i), normal, fragpos, view_dir, color);
         }
         }
 '''
