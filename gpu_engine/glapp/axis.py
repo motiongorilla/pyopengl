@@ -72,7 +72,8 @@ class Axis(Mesh):
                     [0,0],
                     [0,0]
                     ]
+        tex = None
 
         super().__init__(program_id=program_id, vertices=vertices,
                          vertex_colors=colors, draw_type=GL_LINES, translation=translation,
-                         animated=animated, normals=normals, uv=uvs)
+                         animated=animated, normals=normals, uv=uvs, texture=tex)

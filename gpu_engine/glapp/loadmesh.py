@@ -8,7 +8,8 @@ class LoadMesh(mesh.Mesh):
                  translation=pygame.Vector3(0,0,0),
                  rotation=mesh.Rotation(0, pygame.Vector3(0,1,0)),
                  scale=pygame.Vector3(1,1,1),
-                 animated=False):
+                 animated=False, texture=None, uv_scale=1):
+        self.uv_scale = uv_scale
         coordinates, triangles, normals, normal_list, uvt, uv_values = self.load_geometry(filename)
         vertices = utils.format_vertices(coordinates, triangles)
         vertex_uvs = utils.format_vertices(uv_values, uvt)
@@ -24,7 +25,7 @@ class LoadMesh(mesh.Mesh):
         super().__init__(program_id=program_id, vertices=vertices,
                          draw_type=draw_type, translation=translation, vertex_colors=colors,
                          rotation=rotation, scale=scale, animated=animated,
-                         normals=vertex_normals, uv=vertex_uvs)
+                         normals=vertex_normals, uv=vertex_uvs, texture=texture)
 
     def load_geometry(self, filename):
         vertices = []
@@ -43,7 +44,7 @@ class LoadMesh(mesh.Mesh):
                     vx, vy, vz = [float(value) for value in line[3:].split(" ")]
                     normals.append((vx,vy,vz))
                 if line[:2] == "vt":
-                    u, v = [float(value) for value in line[3:].split(" ")]
+                    u, v = [float(value)*self.uv_scale for value in line[3:].split(" ")]
                     uv_values.append((u,v))
                 if line[:2] == "f ":
                     t1, t2, t3 = [int(value.split("/")[0]) for value in line[2:].split(" ")]

@@ -14,3 +14,8 @@ class Uniform():
             glUniform3f(self.variable_id, self.data[0], self.data[1], self.data[2])
         elif self.data_type == "mat4":
             glUniformMatrix4fv(self.variable_id, 1, GL_TRUE, self.data)
+        elif self.data_type == "sampler2D":
+            texture_obj, texture_unit = self.data
+            glActiveTexture(GL_TEXTURE0 + texture_unit)
+            glBindTexture(GL_TEXTURE_2D, texture_obj)
+            glUniform1i(self.variable_id, texture_unit)

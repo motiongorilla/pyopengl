@@ -14,6 +14,7 @@ vertex_shader = r'''
 in vec3 position;
 in vec3 vertex_color;
 in vec3 vertex_normal;
+in vec2 vertex_uv;
 
 uniform mat4 projection_mat;
 uniform mat4 model_mat;
@@ -23,6 +24,7 @@ out vec3 color;
 out vec3 normal;
 out vec3 fragpos;
 out vec3 view_pos;
+out vec2 uv;
 
 void main(){
         view_pos = vec3(inverse(model_mat)*
@@ -32,6 +34,7 @@ void main(){
         normal = mat3(transpose(inverse(model_mat))) * vertex_normal;
         fragpos = vec3(model_mat * vec4(position, 1));
         color = vertex_color;
+        uv = vertex_uv;
         }
 '''
 
@@ -41,6 +44,9 @@ in vec3 color;
 in vec3 normal;
 in vec3 fragpos;
 in vec3 view_pos;
+in vec2 uv;
+
+uniform sampler2D tex;
 
 out vec4 frag_color;
 
@@ -62,7 +68,7 @@ vec4 Create_Light(vec3 light_pos, vec3 light_color, vec3 normal, vec3 fragpos, v
         vec3 norm = normalize(normal);
         vec3 light_dir = normalize(light_pos-fragpos);
         float diff = max(dot(norm, light_dir), 0);
-        vec3 diffuse = diff * light_color;
+        vec3 diffuse = diff * light_color * 2.0f;
 
         // specular
         float specular_strength = 0.8;
@@ -80,7 +86,9 @@ void main(){
         for(int i=0; i < NUM_LIGHTS; i++) {
             frag_color += Create_Light(light_data[i].position, light_data[i].color, normal, fragpos, view_dir, color);
         }
-        }
+
+        frag_color = frag_color * texture(tex, uv);
+}
 '''
 
 
@@ -91,17 +99,18 @@ class Shader(PyGLApp):
         self.mesh = None
         self.light = None
         self.light_b = None
+        # glEnable(GL_CULL_FACE)
 
     def initialise(self):
         self.program_id = create_program(vertex_shader, fragment_shader)
         self.camera = Camera(program_id=self.program_id, w=self.screen_width, h=self.screen_height, fov=40)
         self.axis = Axis(program_id=self.program_id, translation=pygame.Vector3(0,0,0))
         self.mesh = LoadMesh(program_id=self.program_id, draw_type=GL_TRIANGLES,
-                             filename="./geometry/pighead.obj", color_normals=False,
-                             scale=pygame.Vector3(1, 1, 1))
+                             filename="./geometry/doghouse/doghouse.obj",
+                             texture="./geometry/doghouse/textures/Scene_-_Root_baseColor.png",
+                             uv_scale=1)
         self.light = Light(self.program_id, pos=pygame.Vector3(2,1,2), light_id=0)
-        self.light_b = Light(self.program_id, pos=pygame.Vector3(-2,1,-5), light_id=1,
-                             color=pygame.Vector3(1,0,0))
+        self.light_b = Light(self.program_id, pos=pygame.Vector3(-2,1,-5), light_id=1)
 
         glEnable(GL_DEPTH_TEST)
 
