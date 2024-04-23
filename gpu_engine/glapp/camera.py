@@ -11,13 +11,18 @@ class Camera:
     def __init__(self, w, h, program_id, fov) -> None:
         self.last_mouse = pygame.math.Vector2(0, 0)
         self.mouse_sensX = 0.1
-        self.mouse_sensY = 0.1
+        self.mouse_sensY = 0.05
         self.speed = 0.1
         self.program_id = program_id
         self.width = w
         self.height = h
 
         self.transformation = identity_matrix()
+        self.transformation = rotate_complex(self.transformation, angle=35,
+                                     axis=pygame.Vector3(0,1,0))
+        self.transformation = rotate_complex(self.transformation, angle=10,
+                                     axis=pygame.Vector3(-1,0,0))
+        self.transformation = translate(self.transformation, 0.25, 1, 10)
         self.projection_matrix = self.perspective_matrix(fov, w/h, 0.01, 10000)
         self.projection = Uniform(data_type="mat4", data=self.projection_matrix)
         self.projection.find_variable(program_id=program_id, variable_name="projection_mat")

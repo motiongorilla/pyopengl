@@ -44,8 +44,13 @@ in vec3 view_pos;
 
 out vec4 frag_color;
 
+struct light{
+        vec3 position;
+        vec3 color;
+        };
+
 #define NUM_LIGHTS 2
-uniform vec3 light_pos[NUM_LIGHTS];
+uniform light light_data[NUM_LIGHTS];
 
 
 vec4 Create_Light(vec3 light_pos, vec3 light_color, vec3 normal, vec3 fragpos, vec3 view_dir, vec3 color){
@@ -73,7 +78,7 @@ void main(){
         frag_color = vec4(0,0,0,1);
 
         for(int i=0; i < NUM_LIGHTS; i++) {
-            frag_color += Create_Light(light_pos[i], vec3(i,1-i, 1-i), normal, fragpos, view_dir, color);
+            frag_color += Create_Light(light_data[i].position, light_data[i].color, normal, fragpos, view_dir, color);
         }
         }
 '''
@@ -95,7 +100,8 @@ class Shader(PyGLApp):
                              filename="./geometry/pighead.obj", color_normals=False,
                              scale=pygame.Vector3(1, 1, 1))
         self.light = Light(self.program_id, pos=pygame.Vector3(2,1,2), light_id=0)
-        self.light_b = Light(self.program_id, pos=pygame.Vector3(-2,1,1), light_id=1)
+        self.light_b = Light(self.program_id, pos=pygame.Vector3(-2,1,-5), light_id=1,
+                             color=pygame.Vector3(1,0,0))
 
         glEnable(GL_DEPTH_TEST)
 
