@@ -1,10 +1,10 @@
-from glapp.PyGLApp import *
-from glapp.utils import *
-from glapp.GraphicsData import GraphicsData
-from glapp.axis import *
-from glapp.loadmesh import *
-from glapp.transformations import *
-from glapp.light import *
+from components.PyGLApp import *
+from components.utils import *
+from components.GraphicsData import GraphicsData
+from components.axis import *
+from components.loadmesh import *
+from components.transformations import *
+from components.light import *
 
 import numpy as np
 
@@ -106,8 +106,8 @@ class Shader(PyGLApp):
         self.camera = Camera(program_id=self.program_id, w=self.screen_width, h=self.screen_height, fov=40)
         self.axis = Axis(program_id=self.program_id, translation=pygame.Vector3(0,0,0))
         self.mesh = LoadMesh(program_id=self.program_id, draw_type=GL_TRIANGLES,
-                             filename="./geometry/doghouse/doghouse.obj",
-                             texture="./geometry/doghouse/textures/Scene_-_Root_baseColor.png",
+                             filename="./geometry/doghouse.obj",
+                             texture="./geometry/doghouse_diffuse.png",
                              uv_scale=1)
         self.light = Light(self.program_id, pos=pygame.Vector3(2,1,2), light_id=0)
         self.light_b = Light(self.program_id, pos=pygame.Vector3(-2,1,-5), light_id=1)

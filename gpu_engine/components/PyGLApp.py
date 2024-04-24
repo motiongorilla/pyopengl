@@ -3,7 +3,6 @@ import os
 from .camera import *
 from pygame.locals import *
 
-
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
