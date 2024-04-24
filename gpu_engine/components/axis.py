@@ -1,7 +1,7 @@
 from .mesh import *
 
 class Axis(Mesh):
-    def __init__(self, program_id, translation=pygame.Vector3(0,0,0), animated=False) -> None:
+    def __init__(self, translation=pygame.Vector3(0,0,0), animated=False, material=None) -> None:
         vertices = [
                     [-100, 0, 0],
                     [100, 0, 0],
@@ -46,34 +46,6 @@ class Axis(Mesh):
                     [0.0,0.0,1.0],
                     [0.0,0.0,1.0],
                     ]
-        normals = [(1,1,1) for i in range(len(vertices))]
-        uvs = [
-                    [0,0],
-                    [0,1],
-                    #X arrow
-                    [0,1],
-                    [0,0],
-                    [0,0],
-                    [0,0],
-                    # Y Axis
-                    [0,0],
-                    [0,0],
-                    #Y arrow
-                    [0,0],
-                    [0,0],
-                    [0,0],
-                    [0,0],
-                    # Z Axis
-                    [0,0],
-                    [0,0],
-                    # Z arrow
-                    [0,0],
-                    [0,0],
-                    [0,0],
-                    [0,0]
-                    ]
-        tex = None
-
-        super().__init__(program_id=program_id, vertices=vertices,
+        super().__init__(vertices=vertices,
                          vertex_colors=colors, draw_type=GL_LINES, translation=translation,
-                         animated=animated, normals=normals, uv=uvs, texture=tex)
+                         animated=animated, material=material)

@@ -3,12 +3,12 @@ import pygame
 from . import mesh, utils
 
 class LoadMesh(mesh.Mesh):
-    def __init__(self, filename, program_id, draw_type,
+    def __init__(self, filename, draw_type=GL_TRIANGLES,
                  color_normals=False, mesh_color=(1.0,1.0,1.0),
                  translation=pygame.Vector3(0,0,0),
                  rotation=mesh.Rotation(0, pygame.Vector3(0,1,0)),
                  scale=pygame.Vector3(1,1,1),
-                 animated=False, texture=None, uv_scale=1):
+                 animated=False, texture=None, uv_scale=1, material=None):
         self.uv_scale = uv_scale
         coordinates, triangles, normals, normal_list, uvt, uv_values = self.load_geometry(filename)
         vertices = utils.format_vertices(coordinates, triangles)
@@ -22,10 +22,10 @@ class LoadMesh(mesh.Mesh):
         if color_normals:
             colors = utils.format_vertices(normals, normal_list)
 
-        super().__init__(program_id=program_id, vertices=vertices,
+        super().__init__(vertices=vertices,
                          draw_type=draw_type, translation=translation, vertex_colors=colors,
                          rotation=rotation, scale=scale, animated=animated,
-                         normals=vertex_normals, uv=vertex_uvs, texture=texture)
+                         normals=vertex_normals, uv=vertex_uvs, texture=texture, material=material)
 
     def load_geometry(self, filename):
         vertices = []
