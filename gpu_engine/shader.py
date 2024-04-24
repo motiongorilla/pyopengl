@@ -112,7 +112,11 @@ class Shader(PyGLApp):
         self.light = Light(self.program_id, pos=pygame.Vector3(2,1,2), light_id=0)
         self.light_b = Light(self.program_id, pos=pygame.Vector3(-2,1,-5), light_id=1)
 
+        glLineWidth(6)
         glEnable(GL_DEPTH_TEST)
+        # opacity
+        # glEnable(GL_BLEND)
+        # glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR)
 
     def camera_init(self):
         pass
