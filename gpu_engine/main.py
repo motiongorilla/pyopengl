@@ -6,6 +6,7 @@ from components.loadmesh import *
 from components.transformations import *
 from components.light import *
 from components.material import *
+from components.plane import *
 
 import numpy as np
 
@@ -14,15 +15,18 @@ class MeshViewer(PyGLApp):
         super().__init__(400, 200, 1000, 800)
         self.axis = None
         self.mesh = None
+        self.plane = None
         self.lights = []
         # glEnable(GL_CULL_FACE)
 
     def initialise(self):
         mat = Material("./shaders/texturedvert.vs", "./shaders/texturedfrag.vs")
         vc_mat = Material("./shaders/vertexcolor_vs.vs", "./shaders/vertexcolor_fs.vs")
+        grid_mat = Material("./shaders/grid_vs.vs", "./shaders/grid_fs.vs")
         self.axis = Axis(material=vc_mat)
         self.mesh = LoadMesh(material=mat, filename="./geometry/doghouse.obj",
                              texture="./geometry/doghouse_diffuse.png")
+        self.plane = Plane(material=grid_mat)
 
         self.camera = Camera(w=self.screen_width, h=self.screen_height, fov=40)
         self.lights.append(Light(pos=pygame.Vector3(2,1,2), light_id=0))
@@ -32,7 +36,7 @@ class MeshViewer(PyGLApp):
         glEnable(GL_DEPTH_TEST)
         # opacity
         # glEnable(GL_BLEND)
-        # glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR)
+        # glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     def camera_init(self):
         pass
@@ -40,6 +44,7 @@ class MeshViewer(PyGLApp):
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.axis.draw(camera=self.camera)
+        # self.plane.draw(camera=self.camera)
         self.mesh.draw(camera=self.camera, lights=self.lights)
 
 MeshViewer().mainloop()
